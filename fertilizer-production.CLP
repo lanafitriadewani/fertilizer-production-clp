@@ -13,7 +13,7 @@
   (dilution-needed yes)
   =>
   (printout t crlf "Add 50g of Ammonium Sulfate" crlf))
-
+ 
 (defrule Potassium-Hydroxide-Low-pH
   (chemical KOH) ; Potassium Hydroxide
   (pH-level low)
@@ -31,7 +31,7 @@
   (printout t crlf "Add 150ml of Potassium Hydroxide" crlf))
 
 (defrule Urea-Hot-Temperature
-  (chemical CO(NH2)2) ; Urea
+  (chemical CO-NH2-2) ; Urea
   (temperature hot)
   (reaction-type solvent)
   (dilution-needed no)
@@ -39,7 +39,7 @@
   (printout t crlf "Add 500ml of Urea" crlf))
 
 (defrule Urea-Warm-Temperature
-  (chemical CO(NH2)2) ; Urea
+  (chemical CO-NH2-2) ; Urea
   (temperature warm)
   (reaction-type solvent)
   (dilution-needed no)
@@ -78,15 +78,32 @@
   =>
   (printout t crlf "Add 5g of Platinum" crlf))
 
-(defrule Other-Chemical-Recommendation
-  (chemical ?chem)
+(defrule Sulfur-Chemical
+  (chemical Sulfur)
   =>
-  (if (eq ?chem Sulfur)
-      then (printout t crlf "Add 200g of Sulfur" crlf)
-      else
-      (if (eq ?chem Magnesium)
-          then (printout t crlf "Add 10g of Magnesium" crlf)
-          else (printout t crlf "No specific recommendation for this chemical" crlf))))
+  (printout t crlf "Add 200g of Sulfur" crlf))
+
+(defrule Magnesium-Chemical
+  (chemical Magnesium)
+  =>
+  (printout t crlf "Add 10g of Magnesium" crlf))
+
+(defrule No-Recommendation
+  (not (or (and (chemical NH4)(pH-level low)(reaction-type acid-base)(dilution-needed yes))
+	   (and (chemical NH4)(pH-level medium)(reaction-type acid-base)(dilution-needed yes))
+	   (and (chemical KOH)(pH-level low)(reaction-type acid-base)(dilution-needed yes))
+	   (and (chemical KOH)(pH-level medium)(reaction-type acid-base)(dilution-needed yes))
+	   (and (chemical CO-NH2-2)(temperature hot)(reaction-type solvent)(dilution-needed no))
+	   (and (chemical CO-NH2-2)(temperature warm)(reaction-type solvent)(dilution-needed no))
+	   (and (chemical NH3)(pressure high)(reaction-type gas-liquid)(dilution-needed yes))
+	   (and (chemical NH3)(pressure medium)(reaction-type gas-liquid)(dilution-needed yes))
+	   (and (chemical Pt)(temperature hot)(reaction-type catalyst)(dilution-needed no))
+	   (and (chemical Pt)(temperature warm)(reaction-type catalyst)(dilution-needed no))
+	   (chemical Sulfur)
+	   (chemical Magnesium)))
+  =>
+  (printout t crlf "No specific recommendation for this chemical" crlf))
+ 
 
 (defrule input
    (initial-fact)
@@ -109,5 +126,4 @@
    (printout t crlf "Is dilution needed? (yes/no) ")
    (bind ?dilution (read))
    (assert (dilution-needed ?dilution))
-   (printout t crlf "RECOMMENDATIONS:" crlf))
- 
+   (printout t crlf "RECOMMENDATIONS:" crlf)) 
